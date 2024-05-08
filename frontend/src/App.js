@@ -3,6 +3,7 @@ import './index.css';
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import Modal from 'react-modal';
+import Plot from 'react-plotly.js';
 
 // // Make sure to bind modal to your appElement (http://reactcommunity.org/react-modal/accessibility/)
 // Modal.setAppElement('.App')
@@ -14,7 +15,8 @@ function App() {
   const [modalIsOpen, setIsOpen] = useState(false);
   const [visualizationType, setVisualizationType] = useState(null);
   const [selectedColumn, setSelectedColumn] = useState([]);
-  const [selectedDataset, setSelectedDataset] = useState(null)
+  const [selectedDataset, setSelectedDataset] = useState(null);
+  const [plotData, setPlotData] = useState(null);
 
   // On file select (from the pop up)
   const onFileChange = (event) => {
@@ -83,19 +85,19 @@ function App() {
     }
   }
 
-  function handleSubmit(event) {
+  const handleSubmit = async (event) => {
     // send a request to the backend
     event.preventDefault();
-    console.log(selectedDataset, selectedColumn);
+    // console.log(selectedDataset, selectedColumn);
     const postData = {};
     postData.id = selectedDataset.id;
     postData.filename = selectedDataset.filename;
     postData.path = selectedDataset.path;
     postData.visualizationType = visualizationType;
     postData.selectedColumn = selectedColumn;
-    console.log(postData);
-    axios.post("http://127.0.0.1:8000/csvmanager/visualize", postData);
-
+    // console.log(postData);
+    const response = await axios.post("http://127.0.0.1:8000/csvmanager/visualize", postData);
+    setPlotData(response.data);
   }
 
   return (
@@ -147,7 +149,7 @@ function App() {
               )}
             </div>
           </div>
-          <div className="flex flex-row w-full justify-around items-center ">
+          <div className="flex flex-row w-full justify-around ">
             <div className='w-1/2 text-2xl font-semibold'>
               <p>Uploaded Files</p>
               <div>
@@ -202,7 +204,21 @@ function App() {
                 </Modal>
               </div>
             </div>
-            <div className='w-1/2 text-2xl font-semibold'><p>Visualization</p><div></div></div>
+            <div className='w-1/2 text-2xl font-semibold'>
+              <p>Visualization</p>
+              <div className='flex flex-col'>
+                {plotData ? (Object.entries(plotData).map(([key, plot]) => {
+                  return (
+                    <div key={key}>
+                      <h2>{key}</h2>
+                      
+                      <Plot data={JSON.parse(plot).data} layout={JSON.parse(plot).layout} />
+                    </div>
+                  )
+                })
+                ) : (<p className='text-slate-400'>Nothing to show!</p>)}
+              </div>
+            </div>
           </div>
         </div>
       </header>

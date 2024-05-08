@@ -22,4 +22,5 @@ from django.urls import path
 urlpatterns = [
     path('upload', views.csvhandler, name='upload'),
     path('getFiles', views.getFiles, name='getFiles'),
+    path('visualize', views.visualize, name='visualize')
 ]
