@@ -1,4 +1,5 @@
 from django.urls import include, path
+from . import views
 """
 URL configuration for csvtograph project.
 
@@ -19,5 +20,6 @@ from django.contrib import admin
 from django.urls import path
 
 urlpatterns = [
-    
+    path('upload', views.csvhandler, name='upload'),
+    path('getFiles', views.getFiles, name='getFiles'),
 ]
