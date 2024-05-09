@@ -51,27 +51,28 @@ def visualize(request):
         if request.method == "POST":
             print(request.data)
             df = pd.read_csv(request.data['path'])
-            if request.data['visualizationType'] == 'bar':
-                figures = {}
-                for column in request.data['selectedColumn']:
-                    # Explode if there are any lists in anty of the cols.s
-                    if df[column].apply(lambda x: '[' in x).any():
-                        print("YES")
-                        df[column] = df[column].apply(eval)
-                        df = df.explode(column)
-                    column_value_counts = df[column].value_counts()
-                    fig = px.bar(column_value_counts, x=column_value_counts.index, y=column_value_counts.values, labels={"x":column, "y": "Count"}, title="Count of each type of "+ column)
+            figures = {}
+            for column in request.data['selectedColumn']:
+                # If col is missing, not doewsnt exist or has empty or nan values.
+                if (column not in df.columns) or ((df[column].isna() == False).any() == False):
+                    continue
+                # If col has lists, explode
+                if df[column].apply(lambda x: '[' in x).any():
+                    df[column] = df[column].apply(eval)
+                    df = df.explode(column)
+                # To combine small values to "otgers"
+                column_value_counts = df[column].value_counts()
+                if request.data['visualizationType'] == 'bar':
+                    fig = px.bar(column_value_counts, x=column_value_counts.index, y=column_value_counts.values, labels={"x":column, "y": "Count"}, title="Count of each type of "+ column, color=column_value_counts.index)
+                    fig.update_layout(hovermode="x")
                     figures[column] = fig.to_json()
-                return Response(figures, status=status.HTTP_200_OK)
-            elif request.data['visualizationType'] == 'pie':
-                figures = {}
-                for column in request.data['selectedColumn']:
-                    column_value_counts = df[column].column_value_counts()
-                    fig = px.pie(column_value_counts, x=column_value_counts.index, y=column_value_counts.values, labels={"x":column, "y": "Count"}, title="Count of each type of "+ column)
+                elif request.data['visualizationType'] == 'pie':
+                    fig = px.pie(column_value_counts, names=column_value_counts.index, values=column_value_counts.values, title="Count of each type of "+ column)
+                    # fig.update_layout(hovermode="x")
                     figures[column] = fig.to_json()
-                return Response(figures, status=status.HTTP_200_OK)
-            else:
-                return Response('Unsupported Visualization Type', status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    return Response('Unsupported Visualization Type', status=status.HTTP_400_BAD_REQUEST)
+            return Response(figures, status=status.HTTP_200_OK)
         return Response('Unsupported Method', status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
         print(e)

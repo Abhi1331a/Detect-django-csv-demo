@@ -73,6 +73,7 @@ function App() {
 
   function closeModal() {
     setIsOpen(false);
+    setSelectedColumn([])
   }
 
   function handleVisualizationTypeChange(e) {
@@ -97,7 +98,10 @@ function App() {
     postData.selectedColumn = selectedColumn;
     // console.log(postData);
     const response = await axios.post("http://127.0.0.1:8000/csvmanager/visualize", postData);
+    // clear state
+    setPlotData(null);
     setPlotData(response.data);
+    closeModal()
   }
 
   return (
