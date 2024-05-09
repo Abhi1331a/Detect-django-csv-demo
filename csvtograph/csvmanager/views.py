@@ -49,7 +49,7 @@ def getFiles(request):
 def visualize(request):
     try:
         if request.method == "POST":
-            print(request.data)
+            # print(request.data)
             df = pd.read_csv(request.data['path'])
             figures = {}
             for column in request.data['selectedColumn']:
@@ -62,6 +62,11 @@ def visualize(request):
                     df = df.explode(column)
                 # To combine small values to "otgers"
                 column_value_counts = df[column].value_counts()
+                percentage = column_value_counts / column_value_counts.sum() *100
+                others = column_value_counts[percentage<5]
+                column_value_counts = column_value_counts[percentage >= 5]
+                column_value_counts['Others'] = others.sum()
+                print(column_value_counts)
                 if request.data['visualizationType'] == 'bar':
                     fig = px.bar(column_value_counts, x=column_value_counts.index, y=column_value_counts.values, labels={"x":column, "y": "Count"}, title="Count of each type of "+ column, color=column_value_counts.index)
                     fig.update_layout(hovermode="x")
