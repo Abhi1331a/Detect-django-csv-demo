@@ -42,7 +42,7 @@ function App() {
 
       // Request made to the backend api
       // Send formData object
-      axios.post("http://127.0.0.1:8000/csvmanager/upload", formData);
+      axios.post("https://detect-django-csv-demo.onrender.com/csvmanager/upload", formData);
 
       fetchFiles()
     }
@@ -53,7 +53,7 @@ function App() {
 
   const fetchFiles = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/csvmanager/getFiles");
+      const response = await axios.get("https://detect-django-csv-demo.onrender.com/csvmanager/getFiles");
       // console.log(response);
       setFiles(response.data);
     }
@@ -97,7 +97,7 @@ function App() {
     postData.visualizationType = visualizationType;
     postData.selectedColumn = selectedColumn;
     // console.log(postData);
-    const response = await axios.post("http://127.0.0.1:8000/csvmanager/visualize", postData);
+    const response = await axios.post("https://detect-django-csv-demo.onrender.com/csvmanager/visualize", postData);
     // clear state
     setPlotData(null);
     setPlotData(response.data);
