@@ -1,6 +1,7 @@
 asgiref==3.8.1
 asttokens==2.4.1
 Brotli==1.1.0
+click==8.1.7
 colorama==0.4.6
 comm==0.2.2
 debugpy==1.8.1
@@ -10,6 +11,8 @@ django-cors-headers==4.3.1
 djangorestframework==3.15.1
 exceptiongroup==1.2.1
 executing==2.0.1
+gunicorn==22.0.0
+h11==0.14.0
 ipykernel==6.29.4
 ipython==8.24.0
 jedi==0.19.1
@@ -38,5 +41,6 @@ tornado==6.4
 traitlets==5.14.3
 typing_extensions==4.11.0
 tzdata==2024.1
+uvicorn==0.29.0
 wcwidth==0.2.13
 whitenoise==6.6.0
