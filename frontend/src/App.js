@@ -17,6 +17,7 @@ function App() {
   const [selectedColumn, setSelectedColumn] = useState([]);
   const [selectedDataset, setSelectedDataset] = useState(null);
   const [plotData, setPlotData] = useState(null);
+  const [uploadTrigger, setUploadTrigger] = useState(false);
 
   // On file select (from the pop up)
   const onFileChange = (event) => {
@@ -42,7 +43,10 @@ function App() {
 
       // Request made to the backend api
       // Send formData object
-      axios.post("https://detect-django-csv-demo.onrender.com/csvmanager/upload", formData);
+      axios.post("http://127.0.0.1:8000/csvmanager/upload", formData).then(() => {
+        // Trigger fetchFiles by updating state
+        setUploadTrigger(prev => !prev);
+      });
 
       fetchFiles()
     }
@@ -53,7 +57,7 @@ function App() {
 
   const fetchFiles = async () => {
     try {
-      const response = await axios.get("https://detect-django-csv-demo.onrender.com/csvmanager/getFiles");
+      const response = await axios.get("http://127.0.0.1:8000/csvmanager/getFiles");
       // console.log(response);
       setFiles(response.data);
     }
@@ -64,7 +68,7 @@ function App() {
 
   useEffect(() => {
     fetchFiles()
-  }, [])
+  }, [uploadTrigger])
 
   function openModal(file) {
     setSelectedDataset(file)
@@ -97,7 +101,7 @@ function App() {
     postData.visualizationType = visualizationType;
     postData.selectedColumn = selectedColumn;
     // console.log(postData);
-    const response = await axios.post("https://detect-django-csv-demo.onrender.com/csvmanager/visualize", postData);
+    const response = await axios.post("http://127.0.0.1:8000/csvmanager/visualize", postData);
     // clear state
     setPlotData(null);
     setPlotData(response.data);
